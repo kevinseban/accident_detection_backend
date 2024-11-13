@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import json
 
 app = Flask(__name__)
+
 # Correctly initialize Flask-SocketIO with cors_allowed_origins to allow all origins
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -53,4 +54,5 @@ def send_alert():
         return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    # Run using Gunicorn in production, not with Flask's built-in server
+    pass  # Gunicorn will be used to start the app, so no need to call socketio.run here
