@@ -14,7 +14,7 @@ CORS(app)
 # MongoDB connection URI
 MONGO_URI = "mongodb+srv://kevinseban03:pass123word@cluster0.eums9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 # client = MongoClient(MONGO_URI)
-client = MongoClient(MONGO_URI, ssl_cert_reqs=False)
+client = MongoClient(MONGO_URI, ssl_cert_reqs=ssl.CERT_NONE)
 
 db = client.get_database('accident_detection')  # Create the 'accident_detection' database
 alerts_collection = db.alerts  # Create the 'alerts' collection
