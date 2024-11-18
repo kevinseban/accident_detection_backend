@@ -1,5 +1,3 @@
-import os
-import ssl
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
@@ -7,16 +5,15 @@ from pymongo import MongoClient
 import json
 
 app = Flask(__name__)
-
-# Initialize SocketIO with the app
+# Correctly initialize Flask-SocketIO with cors_allowed_origins to allow all origins
 socketio = SocketIO(app, cors_allowed_origins="*")
-CORS(app)
+
+# Enable CORS for all routes and all domains
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # MongoDB connection URI
 MONGO_URI = "mongodb+srv://kevinseban03:pass123word@cluster0.eums9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-# client = MongoClient(MONGO_URI)
-client = MongoClient(MONGO_URI, ssl_cert_reqs=ssl.CERT_NONE)
-
+client = MongoClient(MONGO_URI)
 db = client.get_database('accident_detection')  # Create the 'accident_detection' database
 alerts_collection = db.alerts  # Create the 'alerts' collection
 
@@ -56,10 +53,4 @@ def send_alert():
         return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    # Only use socketio.run() if in development mode.
-    # Use os.environ to check for a production environment
-    if os.environ.get('FLASK_ENV') == 'development':
-        socketio.run(app, debug=True)
-    else:
-        # In production, Flask runs on the Render port (dynamic $PORT environment variable)
-        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
