@@ -12,10 +12,10 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # MongoDB connection URI
-MONGO_URI = "mongodb+srv://kevinseban03:pass123word@cluster0.eums9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-client = MongoClient(MONGO_URI)
-db = client.get_database('accident_detection')  # Create the 'accident_detection' database
-alerts_collection = db.alerts  # Create the 'alerts' collection
+# MONGO_URI = "mongodb+srv://kevinseban03:pass123word@cluster0.eums9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+# client = MongoClient(MONGO_URI)
+# db = client.get_database('accident_detection')  # Create the 'accident_detection' database
+# alerts_collection = db.alerts  # Create the 'alerts' collection
 
 @app.route('/send_alert', methods=['POST'])
 def send_alert():
@@ -29,7 +29,8 @@ def send_alert():
         alert = {
             "severity": data.get("severity"),
             "location": data.get("location"),
-            "timestamp": data.get("timestamp")
+            "timestamp": data.get("timestamp"),
+            "vehicleType": data.get("vehicleType")
         }
 
         # Check that required fields are present
@@ -37,15 +38,16 @@ def send_alert():
             return jsonify({"error": "Missing required fields"}), 400
         
         # Insert the alert into MongoDB
-        alert_id = alerts_collection.insert_one(alert).inserted_id
+        # alert_id = alerts_collection.insert_one(alert).inserted_id
         
         # Convert ObjectId to string for JSON serialization
-        alert["_id"] = str(alert_id)
+        # alert["_id"] = str(alert_id)
 
         # Emit the alert to all connected clients via socket.io (broadcasting the event)
         socketio.emit('new_alert', json.dumps(alert))
 
-        return jsonify({"message": "Alert received", "id": str(alert_id)}), 201
+        # return jsonify({"message": "Alert received", "id": str(alert_id)}), 201
+        return jsonify({"message": "Alert received"}), 201
     
     except Exception as e:
         # Log the error and return a 500 error if something goes wrong
